@@ -1,16 +1,20 @@
-from core.memory import remember, recall, forget
+from core.memory import remember, recall
 from core.config import get_info
+from core.projects import add_project, get_projects
 from plugins.plugin_manager import PluginManager
 
 
 class AlfredBrain:
 
+
     def __init__(self):
+
         self.name = "Alfred"
 
-        # Start plugin system
+        # Load plugins
         self.plugin_manager = PluginManager()
         self.plugin_manager.load_plugins()
+
 
 
     def think(self, message):
@@ -18,7 +22,11 @@ class AlfredBrain:
         message = message.lower().strip()
 
 
-        # Check plugins first
+
+        # =========================
+        # PLUGINS
+        # =========================
+
         for plugin in self.plugin_manager.plugins:
 
             if hasattr(plugin, "run"):
@@ -26,11 +34,19 @@ class AlfredBrain:
                 response = plugin.run(message)
 
                 if response:
+
                     return response
 
 
-        # Alfred identity
-        if "who are you" in message or "what are you" in message:
+
+        # =========================
+        # IDENTITY
+        # =========================
+
+        if (
+            "who are you" in message
+            or "what are you" in message
+        ):
 
             info = get_info()
 
@@ -40,7 +56,7 @@ class AlfredBrain:
             )
 
 
-        # Show Alfred information
+
         if "system info" in message:
 
             info = get_info()
@@ -48,68 +64,135 @@ class AlfredBrain:
             return (
                 f"Name: {info['name']}\n"
                 f"Version: {info['version']}\n"
-                f"Status: {info['status']}\n"
-                f"Creator: {info['creator']}"
+                f"Creator: {info['creator']}\n"
+                f"Status: {info['status']}"
             )
 
 
-        # Remember something
+
+        # =========================
+        # MEMORY
+        # =========================
+
         if message.startswith("remember "):
 
-            data = message.replace("remember ", "", 1)
+            data = message.replace(
+                "remember ",
+                "",
+                1
+            )
+
 
             if " is " in data:
 
-                key, value = data.split(" is ", 1)
+                key, value = data.split(
+                    " is ",
+                    1
+                )
+
 
                 return remember(
                     key.strip(),
                     value.strip()
                 )
 
+
             return "Tell me what you want me to remember."
 
 
-        # Recall memory
+
         if message.startswith("what is "):
 
-            key = message.replace("what is ", "", 1)
-
-            return recall(key.strip())
-
-
-        # Forget memory
-        if message.startswith("forget "):
-
-            key = message.replace("forget ", "", 1)
-
-            return forget(key.strip())
+            key = message.replace(
+                "what is ",
+                "",
+                1
+            )
 
 
-        # List plugins
-        if "list plugins" in message:
+            return recall(
+                key.strip()
+            )
+
+
+
+        # =========================
+        # PROJECT MANAGER
+        # =========================
+
+        if message.startswith("add project "):
+
+            project = message.replace(
+                "add project ",
+                "",
+                1
+            )
+
+
+            return add_project(
+                project
+            )
+
+
+
+        if (
+            message == "projects"
+            or "show projects" in message
+        ):
+
+            return get_projects()
+
+
+
+        # =========================
+        # PLUGIN COMMANDS
+        # =========================
+
+        if (
+            "list plugins" in message
+        ):
 
             return self.plugin_manager.list_plugins()
 
 
-        # Greetings
-        if "hello" in message or "hi" in message:
 
-            return "Hello. How can I assist you?"
+        # =========================
+        # BASIC CHAT
+        # =========================
+
+        if (
+            "hello" in message
+            or "hi" in message
+        ):
+
+            return (
+                "Hello. Alfred is online "
+                "and ready."
+            )
 
 
-        if "good morning" in message:
 
-            return "Good morning. Alfred is ready."
+        if "how are you" in message:
 
-
-        if "good night" in message:
-
-            return "Good night. Systems standing by."
+            return (
+                "All systems are operating normally."
+            )
 
 
-        # Default response
+
+        if "thank you" in message:
+
+            return (
+                "You're welcome."
+            )
+
+
+
+        # =========================
+        # UNKNOWN COMMAND
+        # =========================
+
         return (
             "I am still learning. "
-            "This function has not been added yet."
+            "This command has not been added yet."
         )
