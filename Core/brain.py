@@ -1,6 +1,7 @@
 from core.memory import remember, recall
 from core.config import get_info
 from core.projects import add_project, get_projects
+from core.ideas import add_idea, get_ideas
 from plugins.plugin_manager import PluginManager
 
 
@@ -40,7 +41,7 @@ class AlfredBrain:
 
 
         # =========================
-        # IDENTITY
+        # ALFRED IDENTITY
         # =========================
 
         if (
@@ -71,7 +72,7 @@ class AlfredBrain:
 
 
         # =========================
-        # MEMORY
+        # MEMORY SYSTEM
         # =========================
 
         if message.startswith("remember "):
@@ -109,7 +110,6 @@ class AlfredBrain:
                 1
             )
 
-
             return recall(
                 key.strip()
             )
@@ -128,7 +128,6 @@ class AlfredBrain:
                 1
             )
 
-
             return add_project(
                 project
             )
@@ -145,12 +144,37 @@ class AlfredBrain:
 
 
         # =========================
+        # IDEA VAULT
+        # =========================
+
+        if message.startswith("save idea "):
+
+            idea = message.replace(
+                "save idea ",
+                "",
+                1
+            )
+
+            return add_idea(
+                idea
+            )
+
+
+
+        if (
+            message == "ideas"
+            or "show ideas" in message
+        ):
+
+            return get_ideas()
+
+
+
+        # =========================
         # PLUGIN COMMANDS
         # =========================
 
-        if (
-            "list plugins" in message
-        ):
+        if "list plugins" in message:
 
             return self.plugin_manager.list_plugins()
 
