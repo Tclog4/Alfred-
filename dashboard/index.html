@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Alfred AI</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+
+<body>
+
+<div class="background"></div>
+
+
+<div class="container">
+
+    <div class="header">
+        <h1>🤖 Alfred</h1>
+        <p>Personal AI Assistant</p>
+    </div>
+
+
+    <div class="status-card">
+
+        <h2>System Status</h2>
+
+        <div class="status">
+            <span class="dot"></span>
+            Online
+        </div>
+
+    </div>
+
+
+    <div class="cards">
+
+
+        <div class="card">
+            <h3>🧠 Memory</h3>
+            <p id="memory">
+                Active
+            </p>
+        </div>
+
+
+        <div class="card">
+            <h3>🔌 Plugins</h3>
+            <p id="plugins">
+                Loading...
+            </p>
+        </div>
+
+
+        <div class="card">
+            <h3>⚙️ Version</h3>
+            <p>
+                0.1.0
+            </p>
+        </div>
+
+
+    </div>
+
+
+
+    <div class="chat">
+
+        <h2>Talk to Alfred</h2>
+
+        <div id="messages"></div>
+
+
+        <div class="input-area">
+
+            <input 
+            id="input"
+            placeholder="Ask Alfred..."
+            >
+
+            <button onclick="sendMessage()">
+                Send
+            </button>
+
+        </div>
+
+    </div>
+
+
+</div>
+
+
+<script src="app.js"></script>
+
+</body>
+
+</html>
