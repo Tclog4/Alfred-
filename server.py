@@ -9,9 +9,7 @@ alfred = AlfredBrain()
 
 @app.route("/")
 def home():
-
-    return "🤖 Alfred API is online"
-
+    return "🤖 Alfred is online"
 
 
 @app.route("/chat", methods=["POST"])
@@ -21,19 +19,16 @@ def chat():
 
     message = data.get("message", "")
 
-
-    response = alfred.think(message)
-
+    reply = alfred.think(message)
 
     return jsonify({
-        "reply": response
+        "reply": reply
     })
-
 
 
 if __name__ == "__main__":
 
-    print("🤖 Alfred API starting...")
+    print("🤖 Alfred server started")
 
     app.run(
         host="0.0.0.0",
