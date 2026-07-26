@@ -1,509 +1,1287 @@
-from core.ai import AIEngine
+"""
+Alfred AI
+Main Brain
+
+Version: 1.0
+"""
+
+import os
+import json
+from datetime import datetime
+
+# ==========================
+# Core Modules
+# ==========================
+
+from core.memory import Memory
 from core.planner import Planner
-from core.tools import ToolManager
-from core.executor import ActionExecutor
-from core.permissions import PermissionManager
+from core.learning import Learning
+from core.workspace import WorkspaceManager
+from core.context import ContextManager
+from core.goals import GoalManager
 
-from core.memory import (
-    remember,
-    recall,
-    remember_event,
-    get_history
-)
+from core.notifications import NotificationManager
+from core.scheduler import Scheduler
 
-from core.projects import (
-    add_project,
-    get_projects
-)
+from core.code_editor import CodeEditor
+from core.error_detector import ErrorDetector
+from core.project_scanner import ProjectScanner
+from core.file_intelligence import FileIntelligence
 
-from core.ideas import (
-    add_idea,
-    get_ideas
-)
+from core.app_builder import AppBuilder
 
-from core.tasks import (
-    add_task,
-    get_tasks,
-    complete_task
-)
+from core.web_browser import WebBrowser
+from core.research_agent import ResearchAgent
 
-from core.learning import (
-    record_problem,
-    record_improvement,
-    get_learning
-)
+from core.system_monitor import SystemMonitor
 
-from plugins.plugin_manager import PluginManager
+from core.tool_registry import ToolRegistry
+from core.skill_manager import SkillManager
+from core.model_manager import ModelManager
 
+from core.self_improvement import SelfImprovement
+
+from core.agent_loop import AgentLoop
+from core.decision_engine import DecisionEngine
+
+from core.knowledge import KnowledgeBase
+
+# ==========================
+# Alfred Brain
+# ==========================
 
 
-class AlfredBrain:
-
+class Alfred:
 
     def __init__(self):
 
-        self.name = "Alfred"
+        print("\nStarting Alfred...\n")
 
+        self.version = "1.0"
 
-        # AI system
-        self.ai = AIEngine()
+        self.started = datetime.now()
 
+        # ----------------------
+        # Intelligence
+        # ----------------------
 
-        # Agent systems
+        self.memory = Memory()
+
+        self.learning = Learning()
+
         self.planner = Planner()
 
-        self.tools = ToolManager()
+        self.knowledge = KnowledgeBase()
 
-        self.executor = ActionExecutor(
-            self.tools
+        self.context = ContextManager()
+
+        self.goals = GoalManager()
+
+        # ----------------------
+        # Project Management
+        # ----------------------
+
+        self.workspace = WorkspaceManager()
+
+        self.files = FileIntelligence()
+
+        self.scanner = ProjectScanner()
+
+        # ----------------------
+        # Coding
+        # ----------------------
+
+        self.editor = CodeEditor()
+
+        self.errors = ErrorDetector()
+
+        self.builder = AppBuilder()
+
+        # ----------------------
+        # Internet
+        # ----------------------
+
+        self.web = WebBrowser()
+
+        self.research = ResearchAgent(
+            self.web,
+            self.knowledge
         )
 
-        self.permissions = PermissionManager()
+        # ----------------------
+        # System
+        # ----------------------
+
+        self.monitor = SystemMonitor()
+
+        self.notifications = NotificationManager()
+
+        self.scheduler = Scheduler()
+
+        # ----------------------
+        # AI Systems
+        # ----------------------
+
+        self.decision = DecisionEngine()
+
+        self.models = ModelManager()
+
+        self.skills = SkillManager()
+
+        self.registry = ToolRegistry()
+
+        self.improvements = SelfImprovement()
+
+        self.agent = AgentLoop(
+            self.planner,
+            self.memory,
+            self.decision
+        )
+
+        # ----------------------
+        # Register Everything
+        # ----------------------
+
+        self.register_tools()
+
+        self.register_skills()
+
+        self.register_models()
+
+        print("Alfred Ready.\n")
+
+    # =====================================================
+    # TOOL REGISTRATION
+    # =====================================================
+
+    def register_tools(self):
+
+        self.registry.register(
+            "code_editor",
+            "Create and edit files",
+            self.editor
+        )
+
+        self.registry.register(
+            "project_scanner",
+            "Scan projects",
+            self.scanner
+        )
+
+        self.registry.register(
+            "error_detector",
+            "Find coding problems",
+            self.errors
+        )
+
+        self.registry.register(
+            "website_builder",
+            "Create websites",
+            self.builder
+        )
+
+        self.registry.register(
+            "web_browser",
+            "Internet access",
+            self.web
+        )
+
+        self.registry.register(
+            "research",
+            "Research information",
+            self.research
+        )
+
+        self.registry.register(
+            "memory",
+            "Store memories",
+            self.memory
+        )
+
+        self.registry.register(
+            "knowledge",
+            "Knowledge base",
+            self.knowledge
+        )
+
+        self.registry.register(
+            "workspace",
+            "Manage projects",
+            self.workspace
+        )
+
+        self.registry.register(
+            "monitor",
+            "System monitoring",
+            self.monitor
+        )
+
+    # =====================================================
+    # SKILLS
+    # =====================================================
+
+    def register_skills(self):
+
+        self.skills.register_skill(
+
+            "coding",
+
+            "Programming assistant",
+
+            [
+                "code_editor",
+                "project_scanner",
+                "error_detector"
+            ]
+
+        )
+
+        self.skills.register_skill(
+
+            "website",
+
+            "Website builder",
+
+            [
+                "website_builder",
+                "code_editor",
+                "research"
+            ]
+
+        )
+
+        self.skills.register_skill(
+
+            "research",
+
+            "Internet research",
+
+            [
+                "web_browser",
+                "research",
+                "knowledge"
+            ]
+
+        )
+
+        self.skills.register_skill(
+
+            "system",
+
+            "Computer management",
+
+            [
+                "monitor"
+            ]
+
+        )
+
+    # =====================================================
+    # AI MODELS
+    # =====================================================
+
+    def register_models(self):
+
+        self.models.register_model(
+
+            "default",
+
+            "Default AI",
+
+            None
+
+        )
+
+        self.models.register_model(
+
+            "coding",
+
+            "Coding AI",
+
+            None
+
+        )
+
+        self.models.register_model(
+
+            "research",
+
+            "Research AI",
+
+            None
+
+# =====================================================
+# REQUEST PROCESSING
+# =====================================================
+
+    def process(self, request):
+
+        request = str(request).strip()
+
+        if not request:
+            return "Please enter a request."
+
+        print(f"\nUser: {request}")
+
+        # ----------------------
+        # Update Context
+        # ----------------------
+
+        self.context.set_context(
+            goal=request
+        )
+
+        # ----------------------
+        # Store Conversation
+        # ----------------------
+
+        try:
+            self.memory.add(
+                "user",
+                request
+            )
+        except:
+            pass
+
+        # ----------------------
+        # Observe
+        # ----------------------
+
+        observation = self.agent.observe(
+            request
+        )
+
+        # ----------------------
+        # Think
+        # ----------------------
+
+        thought = self.agent.think(
+            observation
+        )
+
+        # ----------------------
+        # Plan
+        # ----------------------
+
+        plan = self.agent.plan(
+            thought
+        )
+
+        # ----------------------
+        # Decide Action
+        # ----------------------
+
+        response = self.route_request(
+            request,
+            thought,
+            plan
+        )
+
+        # ----------------------
+        # Save Response
+        # ----------------------
+
+        try:
+            self.memory.add(
+                "alfred",
+                response
+            )
+        except:
+            pass
+
+        return response
 
 
+# =====================================================
+# MAIN ROUTER
+# =====================================================
 
-        # Plugins
-        self.plugin_manager = PluginManager()
+    def route_request(
+        self,
+        request,
+        thought,
+        plan
+    ):
 
-        self.plugin_manager.load_plugins()
+        request_lower = request.lower()
 
+        # ------------------
+        # Website Creation
+        # ------------------
 
+        if "website" in request_lower:
 
-    def think(self, message):
-
-        message = message.strip()
-
-        lower = message.lower()
-
-
-
-        # =========================
-        # APPROVAL SYSTEM
-        # =========================
-
-        if lower.startswith("allow "):
-
-            answer = lower.replace(
-                "allow ",
-                "",
-                1
+            return self.handle_website(
+                request
             )
 
+        # ------------------
+        # App Creation
+        # ------------------
 
-            result = self.permissions.approve(
-                answer,
-                self.executor
+        if "app" in request_lower:
+
+            return self.handle_app(
+                request
             )
 
+        # ------------------
+        # Coding
+        # ------------------
 
-            remember_event(
-                f"Permission response: {answer}"
-            )
-
-
-            return result
-
-
-
-        # =========================
-        # PLUGINS
-        # =========================
-
-        for plugin in self.plugin_manager.plugins:
-
-            if hasattr(plugin, "run"):
-
-                response = plugin.run(
-                    lower
-                )
-
-
-                if response:
-
-                    return response
-
-
-
-        # =========================
-        # MEMORY
-        # =========================
-
-        if lower.startswith("remember "):
-
-            data = message.replace(
-                "remember ",
-                "",
-                1
-            )
-
-
-            if " is " in data:
-
-                key, value = data.split(
-                    " is ",
-                    1
-                )
-
-
-                result = remember(
-                    key.strip(),
-                    value.strip()
-                )
-
-
-                remember_event(
-                    f"Remembered {key.strip()}"
-                )
-
-
-                return result
-
-
-
-        if lower.startswith("what is "):
-
-            key = message.replace(
-                "what is ",
-                "",
-                1
-            )
-
-
-            return recall(
-                key.strip()
-            )
-
-
-
-        # =========================
-        # HISTORY
-        # =========================
-
-        if lower.startswith(
-            "remember event "
+        if (
+            "python" in request_lower
+            or
+            "code" in request_lower
+            or
+            "program" in request_lower
         ):
 
-            event = message.replace(
-                "remember event ",
-                "",
-                1
+            return self.handle_code(
+                request
             )
 
+        # ------------------
+        # Project Scan
+        # ------------------
 
-            return remember_event(
-                event
-            )
-
-
-
-        if lower == "history":
-
-            return get_history()
-
-
-
-        # =========================
-        # PROJECTS
-        # =========================
-
-        if lower.startswith(
-            "add project "
+        if (
+            "scan" in request_lower
+            or
+            "project" in request_lower
         ):
 
-            project = message.replace(
-                "add project ",
-                "",
-                1
-            )
+            return self.handle_scan()
 
+        # ------------------
+        # Errors
+        # ------------------
 
-            remember_event(
-                f"Created project: {project}"
-            )
+        if "error" in request_lower:
 
+            return self.handle_errors()
 
-            return add_project(
-                project
-            )
+        # ------------------
+        # Internet
+        # ------------------
 
-
-
-        if lower == "projects":
-
-            return get_projects()
-
-
-
-        # =========================
-        # IDEAS
-        # =========================
-
-        if lower.startswith(
-            "save idea "
+        if (
+            "search" in request_lower
+            or
+            "research" in request_lower
         ):
 
-            idea = message.replace(
-                "save idea ",
-                "",
-                1
+            return self.handle_research(
+                request
             )
 
+        # ------------------
+        # Goals
+        # ------------------
 
-            remember_event(
-                f"Saved idea: {idea}"
-            )
+        if "goal" in request_lower:
 
+            return self.goals.list_goals()
 
-            return add_idea(
-                idea
-            )
+        # ------------------
+        # Workspaces
+        # ------------------
 
+        if "workspace" in request_lower:
 
+            return self.workspace.list_workspaces()
 
-        if lower == "ideas":
+        # ------------------
+        # Notifications
+        # ------------------
 
-            return get_ideas()
+        if "notification" in request_lower:
 
+            return self.notifications.get_notifications()
 
+        # ------------------
+        # System
+        # ------------------
 
-        # =========================
-        # TASKS
-        # =========================
-
-        if lower.startswith(
-            "add task "
+        if (
+            "system" in request_lower
+            or
+            "computer" in request_lower
+            or
+            "status" in request_lower
         ):
 
-            task = message.replace(
-                "add task ",
-                "",
-                1
+            return self.monitor.get_summary()
+
+        # ------------------
+        # Knowledge
+        # ------------------
+
+        if "knowledge" in request_lower:
+
+            keyword = request.replace(
+                "knowledge",
+                ""
+            ).strip()
+
+            return self.knowledge.search(
+                keyword
             )
 
+        # ------------------
+        # Fallback
+        # ------------------
 
-            remember_event(
-                f"Added task: {task}"
-            )
-
-
-            return add_task(
-                task
-            )
-
-
-
-        if lower == "tasks":
-
-            return get_tasks()
+        return self.general_ai(
+            request,
+            thought,
+            plan
+        )
 
 
+# =====================================================
+# GENERAL AI
+# =====================================================
 
-        if lower.startswith(
-            "complete task "
+    def general_ai(
+        self,
+        request,
+        thought,
+        plan
+    ):
+
+        return f"""
+Request:
+{request}
+
+Goal:
+{thought['goal']}
+
+Suggested Tools:
+{", ".join(thought['tools'])}
+
+Plan:
+{plan}
+
+No dedicated action exists yet.
+
+This request should be passed to the connected AI model.
+"""
+
+
+# =====================================================
+# WEBSITE HANDLER
+# =====================================================
+
+    def handle_website(
+        self,
+        request
+    ):
+
+        return (
+            "Website request detected.\n"
+            "Website Builder skill selected."
+        )
+
+
+# =====================================================
+# APP HANDLER
+# =====================================================
+
+    def handle_app(
+        self,
+        request
+    ):
+
+        return (
+            "Application request detected.\n"
+            "App Builder skill selected."
+        )
+
+
+# =====================================================
+# CODE HANDLER
+# =====================================================
+
+    def handle_code(
+        self,
+        request
+    ):
+
+        return (
+            "Coding request detected.\n"
+            "Coding skill selected."
+        )
+
+
+# =====================================================
+# PROJECT SCAN
+# =====================================================
+
+    def handle_scan(self):
+
+        return self.scanner.scan_project(".")
+
+
+# =====================================================
+# ERROR SCAN
+# =====================================================
+
+    def handle_errors(self):
+
+        return self.errors.scan_project(".")
+
+
+# =====================================================
+# RESEARCH
+# =====================================================
+
+    def handle_research(
+        self,
+        request
+    ):
+
+        return self.research.research(
+            request
+       # =====================================================
+# WEBSITE CREATION
+# =====================================================
+
+    def create_website(
+        self,
+        project_name
+    ):
+
+        print(
+            f"Creating website: {project_name}"
+        )
+
+        result = self.builder.create_project(
+            project_name,
+            "website"
+        )
+
+        self.notifications.send(
+            f"Website '{project_name}' created.",
+            "builder"
+        )
+
+        return result
+
+
+# =====================================================
+# APPLICATION CREATION
+# =====================================================
+
+    def create_app(
+        self,
+        project_name,
+        template="python"
+    ):
+
+        print(
+            f"Creating app: {project_name}"
+        )
+
+        result = self.builder.create_project(
+            project_name,
+            template
+        )
+
+        self.notifications.send(
+            f"Application '{project_name}' created.",
+            "builder"
+        )
+
+        return result
+
+
+# =====================================================
+# FILE READING
+# =====================================================
+
+    def read_file(
+        self,
+        path
+    ):
+
+        return self.editor.read(path)
+
+
+# =====================================================
+# FILE CREATION
+# =====================================================
+
+    def create_file(
+        self,
+        path,
+        content=""
+    ):
+
+        return self.editor.create(
+            path,
+            content
+        )
+
+
+# =====================================================
+# FILE UPDATE
+# =====================================================
+
+    def update_file(
+        self,
+        path,
+        content
+    ):
+
+        return self.editor.overwrite(
+            path,
+            content
+        )
+
+
+# =====================================================
+# APPEND FILE
+# =====================================================
+
+    def append_file(
+        self,
+        path,
+        content
+    ):
+
+        return self.editor.append(
+            path,
+            content
+        )
+
+
+# =====================================================
+# PROJECT ANALYSIS
+# =====================================================
+
+    def analyse_project(
+        self,
+        folder="."
+    ):
+
+        report = {}
+
+        report["scan"] = self.scanner.scan_project(
+            folder
+        )
+
+        report["errors"] = self.errors.scan_project(
+            folder
+        )
+
+        report["files"] = self.files.scan(
+            folder
+        )
+
+        return report
+
+
+# =====================================================
+# BACKUP BEFORE EDIT
+# =====================================================
+
+    def backup_before_edit(
+        self,
+        path
+    ):
+
+        if hasattr(
+            self,
+            "backup"
         ):
 
-            number = lower.replace(
-                "complete task ",
-                "",
-                1
-            )
-
-
-            try:
-
-                result = complete_task(
-                    int(number)
-                )
-
-
-                remember_event(
-                    f"Completed task {number}"
-                )
-
-
-                return result
-
-
-            except:
-
-                return (
-                    "Invalid task number."
-                )
-
-
-
-        # =========================
-        # SELF IMPROVEMENT
-        # =========================
-
-        if lower.startswith(
-            "report problem "
-        ):
-
-            problem = message.replace(
-                "report problem ",
-                "",
-                1
-            )
-
-
-            return record_problem(
-                problem
-            )
-
-
-
-        if lower.startswith(
-            "suggest improvement "
-        ):
-
-            idea = message.replace(
-                "suggest improvement ",
-                "",
-                1
-            )
-
-
-            return record_improvement(
-                idea
-            )
-
-
-
-        if lower == "learning":
-
-            return get_learning()
-
-
-
-        # =========================
-        # ACTION REQUESTS
-        # =========================
-
-        if lower.startswith(
-            "read file "
-        ):
-
-            path = message.replace(
-                "read file ",
-                "",
-                1
-            )
-
-
-            return self.permissions.request(
-                "read_file",
+            return self.backup.create_backup(
                 path
             )
 
+        return "Backup system unavailable."
 
 
-        if lower.startswith(
-            "search file "
+# =====================================================
+# CHANGE PREVIEW
+# =====================================================
+
+    def preview_change(
+        self,
+        old_content,
+        new_content
+    ):
+
+        if hasattr(
+            self,
+            "preview"
         ):
 
-            name = message.replace(
-                "search file ",
-                "",
-                1
+            return self.preview.compare(
+                old_content,
+                new_content
             )
 
-
-            return self.permissions.request(
-                "search_files",
-                name
-            )
+        return "Preview unavailable."
 
 
+# =====================================================
+# SAFE EDIT
+# =====================================================
 
-        if "edit file" in lower:
+    def safe_edit(
+        self,
+        file,
+        new_content
+    ):
 
-            return self.permissions.request(
-                "edit_file",
-                message
-            )
+        old = self.read_file(file)
+
+        preview = self.preview_change(
+            old,
+            new_content
+        )
+
+        return {
+
+            "status": "awaiting approval",
+
+            "file": file,
+
+            "preview": preview,
+
+            "new_content": new_content
+
+        }
 
 
+# =====================================================
+# APPLY APPROVED CHANGE
+# =====================================================
 
-        # =========================
-        # PLANNING
-        # =========================
+    def apply_change(
+        self,
+        file,
+        content
+    ):
 
-        if (
-            "plan" in lower
-            or "help me" in lower
+        self.backup_before_edit(
+            file
+        )
+
+        result = self.update_file(
+            file,
+            content
+        )
+
+        self.notifications.send(
+
+            f"{file} updated.",
+
+            "editor"
+
+        )
+
+        return result
+
+
+# =====================================================
+# SELF IMPROVEMENT
+# =====================================================
+
+    def analyse_self(self):
+
+        self.improvements.propose(
+
+            "Improve code generation",
+
+            "Generated projects could be cleaner.",
+
+            "High"
+
+        )
+
+        self.improvements.propose(
+
+            "Improve planning",
+
+            "Large projects should be split better.",
+
+            "Medium"
+
+        )
+
+        self.improvements.propose(
+
+            "Improve learning",
+
+            "Remember more successful edits.",
+
+            "Medium"
+
+        )
+
+        return self.improvements.list()
+
+
+# =====================================================
+# KNOWLEDGE
+# =====================================================
+
+    def remember_solution(
+
+        self,
+
+        title,
+
+        information
+
+    ):
+
+        return self.knowledge.add(
+
+            title,
+
+            information
+
+        )
+
+
+# =====================================================
+# RESEARCH + SAVE
+# =====================================================
+
+    def research_and_save(
+
+        self,
+
+        topic
+
+    ):
+
+        report = self.research.research(
+
+            topic
+
+        )
+
+        self.knowledge.add(
+
+            topic,
+
+            str(report)
+
+        )
+
+        return report
+
+
+# =====================================================
+# GOAL CREATION
+# =====================================================
+
+    def create_goal(
+
+        self,
+
+        name
+
+    ):
+
+        return self.goals.create_goal(
+
+            name
+
+        )
+
+
+# =====================================================
+# WORKSPACE
+# =====================================================
+
+    def open_workspace(
+
+        self,
+
+        name
+
+    ):
+
+        return self.workspace.open_workspace(
+
+            name
+
+        )
+
+
+# =====================================================
+# SYSTEM REPORT
+# =====================================================
+
+    def system_report(self):
+
+        return self.monitor.get_summary()
+
+# =====================================================
+# AI MODEL
+# =====================================================
+
+    def connect_model(
+        self,
+        model
+    ):
+
+        self.ai_model = model
+
+        print("AI model connected.")
+
+        return True
+
+
+# =====================================================
+# AI RESPONSE
+# =====================================================
+
+    def ask_ai(
+        self,
+        prompt
+    ):
+
+        if not hasattr(
+            self,
+            "ai_model"
         ):
 
-            plan = self.planner.create_plan(
-                message
+            return (
+                "No AI model connected."
             )
 
 
-            output = (
-                "Plan created:\n"
+        try:
+
+            return self.ai_model.generate(
+                prompt
             )
 
 
-            for step in plan:
+        except Exception as error:
 
-                output += (
-                    f"- {step}\n"
+            return (
+                f"AI Error: {error}"
+            )
+
+
+# =====================================================
+# STARTUP CHECK
+# =====================================================
+
+    def startup_check(self):
+
+        report = {}
+
+        report["version"] = self.version
+
+        report["started"] = str(
+            self.started
+        )
+
+        report["tools"] = len(
+            self.registry.tools
+        )
+
+        report["skills"] = len(
+            self.skills.skills
+        )
+
+        report["models"] = len(
+            self.models.models
+        )
+
+        return report
+
+
+# =====================================================
+# HEALTH REPORT
+# =====================================================
+
+    def health(self):
+
+        return {
+
+            "memory": True,
+
+            "planner": True,
+
+            "workspace": True,
+
+            "editor": True,
+
+            "internet": True,
+
+            "monitor": True,
+
+            "agent": True
+
+        }
+
+
+# =====================================================
+# STATUS
+# =====================================================
+
+    def status(self):
+
+        return {
+
+            "version": self.version,
+
+            "running": True,
+
+            "started": str(
+                self.started
+            ),
+
+            "workspace":
+
+            self.context.get_context()
+
+        }
+
+
+# =====================================================
+# HELP
+# =====================================================
+
+    def help(self):
+
+        return """
+
+Alfred Commands
+
+status
+
+health
+
+scan project
+
+search
+
+research
+
+create website
+
+create app
+
+goal
+
+workspace
+
+knowledge
+
+system
+
+"""
+
+
+# =====================================================
+# MAIN LOOP
+# =====================================================
+
+    def run(self):
+
+        print()
+
+        print("======================")
+
+        print(" Alfred AI Ready ")
+
+        print("======================")
+
+        print()
+
+        while True:
+
+            try:
+
+                request = input(
+                    "You > "
                 )
 
+            except KeyboardInterrupt:
 
-            remember_event(
-                "Created a plan"
+                print()
+
+                print("Stopping Alfred...")
+
+                break
+
+
+            if not request:
+
+                continue
+
+
+            command = request.lower()
+
+
+            if command == "exit":
+
+                break
+
+
+            if command == "quit":
+
+                break
+
+
+            if command == "status":
+
+                print(
+
+                    self.status()
+
+                )
+
+                continue
+
+
+            if command == "health":
+
+                print(
+
+                    self.health()
+
+                )
+
+                continue
+
+
+            if command == "help":
+
+                print(
+
+                    self.help()
+
+                )
+
+                continue
+
+
+            response = self.process(
+
+                request
+
             )
 
+            print()
 
-            return output
+            print("Alfred >")
 
+            print(response)
 
+            print()
 
-        # =========================
-        # AI MODEL
-        # =========================
+        print()
 
-        response = self.ai.ask(
-            message
-        )
-
-
-        if self.ai.connected:
-
-            remember_event(
-                "Used AI model"
-            )
-
-            return response
-
-
-
-        # =========================
-        # BASIC RESPONSES
-        # =========================
-
-        if lower in [
-            "hi",
-            "hello"
-        ]:
-
-            return (
-                "Hello. Alfred is online."
-            )
-
-
-
-        if "who are you" in lower:
-
-            return (
-                "I am Alfred, "
-                "your personal AI assistant."
-            )
-
-
-
-        return (
-            "I understand the request, "
-            "but my AI model is not connected yet."
-        )
+        print("Goodbye.")
