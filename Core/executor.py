@@ -1,42 +1,110 @@
-class ActionExecutor:
+"""
+Alfred AI
+Tool Executor
+Version 2.0
+"""
 
 
-    def __init__(self, tools):
-
-        self.tools = tools
+class Executor:
 
 
+    def __init__(
+        self
+    ):
 
-    def execute(self, action, data=None):
+        self.tools = {}
 
 
-        if action == "read_file":
 
-            return self.tools.use(
-                "read_file",
-                data
+    # ---------------------------------
+
+    def register(
+        self,
+        name,
+        tool
+    ):
+
+        self.tools[name] = tool
+
+
+        return True
+
+
+
+    # ---------------------------------
+
+    def execute(
+        self,
+        tool_name,
+        action,
+        parameters=None
+    ):
+
+        tool = self.tools.get(
+            tool_name
+        )
+
+
+        if tool is None:
+
+            return {
+
+                "success": False,
+
+                "error":
+                f"Tool {tool_name} not found."
+
+            }
+
+
+
+        try:
+
+            result = tool.execute(
+
+                action,
+
+                parameters or {}
+
             )
 
 
+            return {
 
-        if action == "list_files":
+                "success": True,
 
-            return self.tools.use(
-                "list_files"
-            )
+                "tool":
+                tool_name,
 
+                "result":
+                result
 
-
-        if action == "search_files":
-
-            return self.tools.use(
-                "search_files",
-                data
-            )
+            }
 
 
 
-        return (
-            "I don't know how to perform "
-            "that action yet."
+        except Exception as error:
+
+            return {
+
+                "success": False,
+
+                "tool":
+                tool_name,
+
+                "error":
+                str(error)
+
+            }
+
+
+
+    # ---------------------------------
+
+    def list_tools(
+        self
+    ):
+
+        return list(
+            self.tools.keys()
         )
