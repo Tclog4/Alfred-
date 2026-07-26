@@ -2,6 +2,7 @@ from core.memory import remember, recall
 from core.config import get_info
 from core.projects import add_project, get_projects
 from core.ideas import add_idea, get_ideas
+from core.tasks import add_task, get_tasks, complete_task
 from plugins.plugin_manager import PluginManager
 
 
@@ -12,7 +13,7 @@ class AlfredBrain:
 
         self.name = "Alfred"
 
-        # Load plugins
+        # Plugin system
         self.plugin_manager = PluginManager()
         self.plugin_manager.load_plugins()
 
@@ -21,7 +22,6 @@ class AlfredBrain:
     def think(self, message):
 
         message = message.lower().strip()
-
 
 
         # =========================
@@ -35,13 +35,12 @@ class AlfredBrain:
                 response = plugin.run(message)
 
                 if response:
-
                     return response
 
 
 
         # =========================
-        # ALFRED IDENTITY
+        # IDENTITY
         # =========================
 
         if (
@@ -72,7 +71,7 @@ class AlfredBrain:
 
 
         # =========================
-        # MEMORY SYSTEM
+        # MEMORY
         # =========================
 
         if message.startswith("remember "):
@@ -90,7 +89,6 @@ class AlfredBrain:
                     " is ",
                     1
                 )
-
 
                 return remember(
                     key.strip(),
@@ -128,9 +126,7 @@ class AlfredBrain:
                 1
             )
 
-            return add_project(
-                project
-            )
+            return add_project(project)
 
 
 
@@ -155,9 +151,7 @@ class AlfredBrain:
                 1
             )
 
-            return add_idea(
-                idea
-            )
+            return add_idea(idea)
 
 
 
@@ -167,6 +161,51 @@ class AlfredBrain:
         ):
 
             return get_ideas()
+
+
+
+        # =========================
+        # TASK MANAGER
+        # =========================
+
+        if message.startswith("add task "):
+
+            task = message.replace(
+                "add task ",
+                "",
+                1
+            )
+
+            return add_task(task)
+
+
+
+        if (
+            message == "tasks"
+            or "show tasks" in message
+        ):
+
+            return get_tasks()
+
+
+
+        if message.startswith("complete task "):
+
+            number = message.replace(
+                "complete task ",
+                "",
+                1
+            )
+
+            try:
+
+                return complete_task(
+                    int(number)
+                )
+
+            except:
+
+                return "Please enter a task number."
 
 
 
@@ -213,7 +252,7 @@ class AlfredBrain:
 
 
         # =========================
-        # UNKNOWN COMMAND
+        # UNKNOWN
         # =========================
 
         return (
