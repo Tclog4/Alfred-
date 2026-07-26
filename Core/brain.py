@@ -2,6 +2,7 @@ from core.ai import AIEngine
 from core.planner import Planner
 from core.tools import ToolManager
 from core.permissions import PermissionManager
+from core.executor import ActionExecutor
 
 from core.memory import remember, recall
 from core.projects import add_project, get_projects
@@ -9,7 +10,6 @@ from core.ideas import add_idea, get_ideas
 from core.tasks import add_task, get_tasks, complete_task
 
 from plugins.plugin_manager import PluginManager
-
 
 
 class AlfredBrain:
@@ -20,18 +20,25 @@ class AlfredBrain:
         self.name = "Alfred"
 
 
-        # AI system (connect later)
+        # AI engine
         self.ai = AIEngine()
 
 
         # Agent systems
         self.planner = Planner()
+
         self.tools = ToolManager()
+
+        self.executor = ActionExecutor(
+            self.tools
+        )
+
         self.permissions = PermissionManager()
 
 
         # Plugins
         self.plugin_manager = PluginManager()
+
         self.plugin_manager.load_plugins()
 
 
@@ -40,15 +47,17 @@ class AlfredBrain:
 
         message = message.strip()
 
+        lower = message.lower()
+
 
 
         # =========================
-        # CHECK PERMISSIONS
+        # PERMISSION RESPONSES
         # =========================
 
-        if message.lower().startswith("allow "):
+        if lower.startswith("allow "):
 
-            answer = message.replace(
+            answer = lower.replace(
                 "allow ",
                 "",
                 1
@@ -66,11 +75,11 @@ class AlfredBrain:
 
             if hasattr(plugin, "run"):
 
-                result = plugin.run(message.lower())
+                response = plugin.run(lower)
 
-                if result:
+                if response:
 
-                    return result
+                    return response
 
 
 
@@ -78,7 +87,7 @@ class AlfredBrain:
         # MEMORY
         # =========================
 
-        if message.lower().startswith("remember "):
+        if lower.startswith("remember "):
 
             data = message.replace(
                 "remember ",
@@ -94,7 +103,6 @@ class AlfredBrain:
                     1
                 )
 
-
                 return remember(
                     key.strip(),
                     value.strip()
@@ -102,7 +110,7 @@ class AlfredBrain:
 
 
 
-        if message.lower().startswith("what is "):
+        if lower.startswith("what is "):
 
             key = message.replace(
                 "what is ",
@@ -120,7 +128,7 @@ class AlfredBrain:
         # PROJECTS
         # =========================
 
-        if message.lower().startswith("add project "):
+        if lower.startswith("add project "):
 
             project = message.replace(
                 "add project ",
@@ -132,7 +140,7 @@ class AlfredBrain:
 
 
 
-        if message.lower() == "projects":
+        if lower == "projects":
 
             return get_projects()
 
@@ -142,7 +150,7 @@ class AlfredBrain:
         # IDEAS
         # =========================
 
-        if message.lower().startswith("save idea "):
+        if lower.startswith("save idea "):
 
             idea = message.replace(
                 "save idea ",
@@ -154,7 +162,7 @@ class AlfredBrain:
 
 
 
-        if message.lower() == "ideas":
+        if lower == "ideas":
 
             return get_ideas()
 
@@ -164,7 +172,7 @@ class AlfredBrain:
         # TASKS
         # =========================
 
-        if message.lower().startswith("add task "):
+        if lower.startswith("add task "):
 
             task = message.replace(
                 "add task ",
@@ -176,27 +184,25 @@ class AlfredBrain:
 
 
 
-        if message.lower() == "tasks":
+        if lower == "tasks":
 
             return get_tasks()
 
 
 
-        if message.lower().startswith("complete task "):
+        if lower.startswith("complete task "):
 
-            number = message.replace(
+            number = lower.replace(
                 "complete task ",
                 "",
                 1
             )
-
 
             try:
 
                 return complete_task(
                     int(number)
                 )
-
 
             except:
 
@@ -205,16 +211,28 @@ class AlfredBrain:
 
 
         # =========================
-        # REQUEST ACTIONS
+        # ACTION REQUESTS
         # =========================
 
-        if (
-            "edit file" in message.lower()
-            or "change file" in message.lower()
-        ):
+        if "read file" in lower:
+
+            path = message.replace(
+                "read file ",
+                "",
+                1
+            )
+
 
             return self.permissions.request(
-                "Modify requested file"
+                f"Read file: {path}"
+            )
+
+
+
+        if "edit file" in lower:
+
+            return self.permissions.request(
+                "Edit requested file"
             )
 
 
@@ -224,8 +242,8 @@ class AlfredBrain:
         # =========================
 
         if (
-            "plan" in message.lower()
-            or "help me" in message.lower()
+            "plan" in lower
+            or "help me" in lower
         ):
 
             plan = self.planner.create_plan(
@@ -233,17 +251,17 @@ class AlfredBrain:
             )
 
 
-            response = "I created a plan:\n"
+            output = "Plan created:\n"
 
 
-            for step in plan:
+            for item in plan:
 
-                response += (
-                    f"- {step}\n"
+                output += (
+                    f"- {item}\n"
                 )
 
 
-            return response
+            return output
 
 
 
@@ -251,25 +269,22 @@ class AlfredBrain:
         # AI MODEL
         # =========================
 
-        ai_response = self.ai.ask(
+        response = self.ai.ask(
             message
         )
 
 
         if self.ai.connected:
 
-            return ai_response
+            return response
 
 
 
         # =========================
-        # BASIC RESPONSES
+        # BASIC
         # =========================
 
-        if message.lower() in [
-            "hello",
-            "hi"
-        ]:
+        if lower in ["hi", "hello"]:
 
             return (
                 "Hello. Alfred is online."
@@ -277,7 +292,7 @@ class AlfredBrain:
 
 
 
-        if "who are you" in message.lower():
+        if "who are you" in lower:
 
             return (
                 "I am Alfred, "
@@ -287,6 +302,7 @@ class AlfredBrain:
 
 
         return (
-            "I am ready, but my AI model "
-            "is not connected yet."
+            "I am ready. "
+            "My AI model is waiting "
+            "to be connected."
         )
