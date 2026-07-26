@@ -7,33 +7,51 @@ class PermissionManager:
 
 
 
-    def request(self, action):
+    def request(self, action, data=None):
 
-        self.pending_action = action
+        self.pending_action = {
+
+            "action": action,
+
+            "data": data
+
+        }
+
 
         return (
-            "Permission required:\n"
-            f"{action}\n\n"
-            "Approve? (yes/no)"
+            "Permission required:\n\n"
+            f"Action: {action}\n"
+            f"Data: {data}\n\n"
+            "Approve? yes/no"
         )
 
 
 
-    def approve(self, answer):
+    def approve(self, answer, executor):
 
         answer = answer.lower().strip()
 
 
         if answer == "yes":
 
-            action = self.pending_action
+            if not self.pending_action:
+
+                return "No pending action."
+
+
+            action = self.pending_action["action"]
+
+            data = self.pending_action["data"]
+
 
             self.pending_action = None
 
-            return (
-                "Approved.\n"
-                f"Executing: {action}"
+
+            return executor.execute(
+                action,
+                data
             )
+
 
 
         if answer == "no":
