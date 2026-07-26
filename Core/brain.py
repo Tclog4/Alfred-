@@ -1,8 +1,8 @@
 from core.ai import AIEngine
 from core.planner import Planner
 from core.tools import ToolManager
-from core.permissions import PermissionManager
 from core.executor import ActionExecutor
+from core.permissions import PermissionManager
 
 from core.memory import remember, recall
 from core.projects import add_project, get_projects
@@ -10,6 +10,7 @@ from core.ideas import add_idea, get_ideas
 from core.tasks import add_task, get_tasks, complete_task
 
 from plugins.plugin_manager import PluginManager
+
 
 
 class AlfredBrain:
@@ -20,7 +21,7 @@ class AlfredBrain:
         self.name = "Alfred"
 
 
-        # AI engine
+        # AI system
         self.ai = AIEngine()
 
 
@@ -34,6 +35,7 @@ class AlfredBrain:
         )
 
         self.permissions = PermissionManager()
+
 
 
         # Plugins
@@ -52,7 +54,7 @@ class AlfredBrain:
 
 
         # =========================
-        # PERMISSION RESPONSES
+        # APPROVAL SYSTEM
         # =========================
 
         if lower.startswith("allow "):
@@ -63,7 +65,10 @@ class AlfredBrain:
                 1
             )
 
-            return self.permissions.approve(answer)
+            return self.permissions.approve(
+                answer,
+                self.executor
+            )
 
 
 
@@ -75,7 +80,9 @@ class AlfredBrain:
 
             if hasattr(plugin, "run"):
 
-                response = plugin.run(lower)
+                response = plugin.run(
+                    lower
+                )
 
                 if response:
 
@@ -103,10 +110,17 @@ class AlfredBrain:
                     1
                 )
 
+
                 return remember(
                     key.strip(),
                     value.strip()
                 )
+
+
+            return (
+                "Tell me what you want "
+                "me to remember."
+            )
 
 
 
@@ -117,6 +131,7 @@ class AlfredBrain:
                 "",
                 1
             )
+
 
             return recall(
                 key.strip()
@@ -136,7 +151,10 @@ class AlfredBrain:
                 1
             )
 
-            return add_project(project)
+
+            return add_project(
+                project
+            )
 
 
 
@@ -158,7 +176,10 @@ class AlfredBrain:
                 1
             )
 
-            return add_idea(idea)
+
+            return add_idea(
+                idea
+            )
 
 
 
@@ -180,7 +201,10 @@ class AlfredBrain:
                 1
             )
 
-            return add_task(task)
+
+            return add_task(
+                task
+            )
 
 
 
@@ -198,23 +222,27 @@ class AlfredBrain:
                 1
             )
 
+
             try:
 
                 return complete_task(
                     int(number)
                 )
 
+
             except:
 
-                return "Invalid task number."
+                return (
+                    "Invalid task number."
+                )
 
 
 
         # =========================
-        # ACTION REQUESTS
+        # FILE ACTIONS
         # =========================
 
-        if "read file" in lower:
+        if lower.startswith("read file "):
 
             path = message.replace(
                 "read file ",
@@ -224,7 +252,24 @@ class AlfredBrain:
 
 
             return self.permissions.request(
-                f"Read file: {path}"
+                "read_file",
+                path
+            )
+
+
+
+        if lower.startswith("search file "):
+
+            name = message.replace(
+                "search file ",
+                "",
+                1
+            )
+
+
+            return self.permissions.request(
+                "search_files",
+                name
             )
 
 
@@ -232,7 +277,8 @@ class AlfredBrain:
         if "edit file" in lower:
 
             return self.permissions.request(
-                "Edit requested file"
+                "edit_file",
+                message
             )
 
 
@@ -251,17 +297,19 @@ class AlfredBrain:
             )
 
 
-            output = "Plan created:\n"
+            result = (
+                "I created a plan:\n"
+            )
 
 
-            for item in plan:
+            for step in plan:
 
-                output += (
-                    f"- {item}\n"
+                result += (
+                    f"- {step}\n"
                 )
 
 
-            return output
+            return result
 
 
 
@@ -281,10 +329,13 @@ class AlfredBrain:
 
 
         # =========================
-        # BASIC
+        # BASIC IDENTITY
         # =========================
 
-        if lower in ["hi", "hello"]:
+        if lower in [
+            "hi",
+            "hello"
+        ]:
 
             return (
                 "Hello. Alfred is online."
@@ -302,7 +353,7 @@ class AlfredBrain:
 
 
         return (
-            "I am ready. "
-            "My AI model is waiting "
-            "to be connected."
+            "I understand the request, "
+            "but my AI model is not "
+            "connected yet."
         )
