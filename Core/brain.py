@@ -27,6 +27,12 @@ from core.tasks import (
     complete_task
 )
 
+from core.learning import (
+    record_problem,
+    record_improvement,
+    get_learning
+)
+
 from plugins.plugin_manager import PluginManager
 
 
@@ -39,7 +45,7 @@ class AlfredBrain:
         self.name = "Alfred"
 
 
-        # AI
+        # AI system
         self.ai = AIEngine()
 
 
@@ -119,7 +125,7 @@ class AlfredBrain:
 
 
         # =========================
-        # MEMORY FACTS
+        # MEMORY
         # =========================
 
         if lower.startswith("remember "):
@@ -153,12 +159,6 @@ class AlfredBrain:
                 return result
 
 
-            return (
-                "Tell me what you want "
-                "me to remember."
-            )
-
-
 
         if lower.startswith("what is "):
 
@@ -176,7 +176,7 @@ class AlfredBrain:
 
 
         # =========================
-        # MEMORY HISTORY
+        # HISTORY
         # =========================
 
         if lower.startswith(
@@ -218,7 +218,7 @@ class AlfredBrain:
 
 
             remember_event(
-                f"Created project {project}"
+                f"Created project: {project}"
             )
 
 
@@ -250,7 +250,7 @@ class AlfredBrain:
 
 
             remember_event(
-                f"Saved idea {idea}"
+                f"Saved idea: {idea}"
             )
 
 
@@ -282,7 +282,7 @@ class AlfredBrain:
 
 
             remember_event(
-                f"Added task {task}"
+                f"Added task: {task}"
             )
 
 
@@ -333,7 +333,51 @@ class AlfredBrain:
 
 
         # =========================
-        # FILE ACTIONS
+        # SELF IMPROVEMENT
+        # =========================
+
+        if lower.startswith(
+            "report problem "
+        ):
+
+            problem = message.replace(
+                "report problem ",
+                "",
+                1
+            )
+
+
+            return record_problem(
+                problem
+            )
+
+
+
+        if lower.startswith(
+            "suggest improvement "
+        ):
+
+            idea = message.replace(
+                "suggest improvement ",
+                "",
+                1
+            )
+
+
+            return record_improvement(
+                idea
+            )
+
+
+
+        if lower == "learning":
+
+            return get_learning()
+
+
+
+        # =========================
+        # ACTION REQUESTS
         # =========================
 
         if lower.startswith(
@@ -395,14 +439,14 @@ class AlfredBrain:
             )
 
 
-            result = (
+            output = (
                 "Plan created:\n"
             )
 
 
             for step in plan:
 
-                result += (
+                output += (
                     f"- {step}\n"
                 )
 
@@ -412,7 +456,7 @@ class AlfredBrain:
             )
 
 
-            return result
+            return output
 
 
 
@@ -436,7 +480,7 @@ class AlfredBrain:
 
 
         # =========================
-        # BASIC IDENTITY
+        # BASIC RESPONSES
         # =========================
 
         if lower in [
@@ -460,6 +504,6 @@ class AlfredBrain:
 
 
         return (
-            "I understand, but my AI "
-            "model is not connected yet."
+            "I understand the request, "
+            "but my AI model is not connected yet."
         )
