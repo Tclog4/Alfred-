@@ -3,6 +3,12 @@ from core.config import get_info
 from core.projects import add_project, get_projects
 from core.ideas import add_idea, get_ideas
 from core.tasks import add_task, get_tasks, complete_task
+from core.files import (
+    read_file,
+    create_file,
+    list_files,
+    search_files
+)
 from plugins.plugin_manager import PluginManager
 
 
@@ -22,6 +28,7 @@ class AlfredBrain:
     def think(self, message):
 
         message = message.lower().strip()
+
 
 
         # =========================
@@ -89,6 +96,7 @@ class AlfredBrain:
                     " is ",
                     1
                 )
+
 
                 return remember(
                     key.strip(),
@@ -205,12 +213,58 @@ class AlfredBrain:
 
             except:
 
-                return "Please enter a task number."
+                return "Please enter a valid task number."
 
 
 
         # =========================
-        # PLUGIN COMMANDS
+        # FILE SYSTEM
+        # =========================
+
+        if message == "list files":
+
+            return list_files()
+
+
+
+        if message.startswith("read file "):
+
+            path = message.replace(
+                "read file ",
+                "",
+                1
+            )
+
+            return read_file(path)
+
+
+
+        if message.startswith("create file "):
+
+            path = message.replace(
+                "create file ",
+                "",
+                1
+            )
+
+            return create_file(path)
+
+
+
+        if message.startswith("search file "):
+
+            name = message.replace(
+                "search file ",
+                "",
+                1
+            )
+
+            return search_files(name)
+
+
+
+        # =========================
+        # PLUGINS
         # =========================
 
         if "list plugins" in message:
@@ -245,14 +299,12 @@ class AlfredBrain:
 
         if "thank you" in message:
 
-            return (
-                "You're welcome."
-            )
+            return "You're welcome."
 
 
 
         # =========================
-        # UNKNOWN
+        # UNKNOWN COMMAND
         # =========================
 
         return (
