@@ -4,10 +4,28 @@ from core.tools import ToolManager
 from core.executor import ActionExecutor
 from core.permissions import PermissionManager
 
-from core.memory import remember, recall
-from core.projects import add_project, get_projects
-from core.ideas import add_idea, get_ideas
-from core.tasks import add_task, get_tasks, complete_task
+from core.memory import (
+    remember,
+    recall,
+    remember_event,
+    get_history
+)
+
+from core.projects import (
+    add_project,
+    get_projects
+)
+
+from core.ideas import (
+    add_idea,
+    get_ideas
+)
+
+from core.tasks import (
+    add_task,
+    get_tasks,
+    complete_task
+)
 
 from plugins.plugin_manager import PluginManager
 
@@ -21,7 +39,7 @@ class AlfredBrain:
         self.name = "Alfred"
 
 
-        # AI system
+        # AI
         self.ai = AIEngine()
 
 
@@ -65,10 +83,19 @@ class AlfredBrain:
                 1
             )
 
-            return self.permissions.approve(
+
+            result = self.permissions.approve(
                 answer,
                 self.executor
             )
+
+
+            remember_event(
+                f"Permission response: {answer}"
+            )
+
+
+            return result
 
 
 
@@ -84,6 +111,7 @@ class AlfredBrain:
                     lower
                 )
 
+
                 if response:
 
                     return response
@@ -91,7 +119,7 @@ class AlfredBrain:
 
 
         # =========================
-        # MEMORY
+        # MEMORY FACTS
         # =========================
 
         if lower.startswith("remember "):
@@ -111,10 +139,18 @@ class AlfredBrain:
                 )
 
 
-                return remember(
+                result = remember(
                     key.strip(),
                     value.strip()
                 )
+
+
+                remember_event(
+                    f"Remembered {key.strip()}"
+                )
+
+
+                return result
 
 
             return (
@@ -140,15 +176,49 @@ class AlfredBrain:
 
 
         # =========================
+        # MEMORY HISTORY
+        # =========================
+
+        if lower.startswith(
+            "remember event "
+        ):
+
+            event = message.replace(
+                "remember event ",
+                "",
+                1
+            )
+
+
+            return remember_event(
+                event
+            )
+
+
+
+        if lower == "history":
+
+            return get_history()
+
+
+
+        # =========================
         # PROJECTS
         # =========================
 
-        if lower.startswith("add project "):
+        if lower.startswith(
+            "add project "
+        ):
 
             project = message.replace(
                 "add project ",
                 "",
                 1
+            )
+
+
+            remember_event(
+                f"Created project {project}"
             )
 
 
@@ -168,12 +238,19 @@ class AlfredBrain:
         # IDEAS
         # =========================
 
-        if lower.startswith("save idea "):
+        if lower.startswith(
+            "save idea "
+        ):
 
             idea = message.replace(
                 "save idea ",
                 "",
                 1
+            )
+
+
+            remember_event(
+                f"Saved idea {idea}"
             )
 
 
@@ -193,12 +270,19 @@ class AlfredBrain:
         # TASKS
         # =========================
 
-        if lower.startswith("add task "):
+        if lower.startswith(
+            "add task "
+        ):
 
             task = message.replace(
                 "add task ",
                 "",
                 1
+            )
+
+
+            remember_event(
+                f"Added task {task}"
             )
 
 
@@ -214,7 +298,9 @@ class AlfredBrain:
 
 
 
-        if lower.startswith("complete task "):
+        if lower.startswith(
+            "complete task "
+        ):
 
             number = lower.replace(
                 "complete task ",
@@ -225,9 +311,17 @@ class AlfredBrain:
 
             try:
 
-                return complete_task(
+                result = complete_task(
                     int(number)
                 )
+
+
+                remember_event(
+                    f"Completed task {number}"
+                )
+
+
+                return result
 
 
             except:
@@ -242,7 +336,9 @@ class AlfredBrain:
         # FILE ACTIONS
         # =========================
 
-        if lower.startswith("read file "):
+        if lower.startswith(
+            "read file "
+        ):
 
             path = message.replace(
                 "read file ",
@@ -258,7 +354,9 @@ class AlfredBrain:
 
 
 
-        if lower.startswith("search file "):
+        if lower.startswith(
+            "search file "
+        ):
 
             name = message.replace(
                 "search file ",
@@ -298,7 +396,7 @@ class AlfredBrain:
 
 
             result = (
-                "I created a plan:\n"
+                "Plan created:\n"
             )
 
 
@@ -307,6 +405,11 @@ class AlfredBrain:
                 result += (
                     f"- {step}\n"
                 )
+
+
+            remember_event(
+                "Created a plan"
+            )
 
 
             return result
@@ -323,6 +426,10 @@ class AlfredBrain:
 
 
         if self.ai.connected:
+
+            remember_event(
+                "Used AI model"
+            )
 
             return response
 
@@ -353,7 +460,6 @@ class AlfredBrain:
 
 
         return (
-            "I understand the request, "
-            "but my AI model is not "
-            "connected yet."
+            "I understand, but my AI "
+            "model is not connected yet."
         )
