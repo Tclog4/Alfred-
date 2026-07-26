@@ -1,92 +1,50 @@
 import os
-import shutil
-from datetime import datetime
-
-
-BACKUP_FOLDER = "database/code_backups"
 
 
 
-def create_backup(path):
-
-    if not os.path.exists(path):
-        return
+class CodeEditor:
 
 
-    if not os.path.exists(BACKUP_FOLDER):
+    def __init__(self):
 
-        os.makedirs(BACKUP_FOLDER)
-
-
-    filename = os.path.basename(path)
-
-    time = datetime.now().strftime(
-        "%Y%m%d_%H%M%S"
-    )
-
-
-    backup_path = (
-        f"{BACKUP_FOLDER}/"
-        f"{filename}_{time}.bak"
-    )
-
-
-    shutil.copy(
-        path,
-        backup_path
-    )
-
-
-    return backup_path
+        self.last_change = None
 
 
 
-def read_code(path):
+    def read(self, path):
 
-    try:
+        if not os.path.exists(path):
+
+            return "File not found."
+
 
         with open(
             path,
             "r",
-            encoding="utf-8"
+            encoding="utf-8",
+            errors="ignore"
         ) as file:
 
             return file.read()
 
 
-    except Exception as e:
 
-        return f"Error: {e}"
+    def create(self, path, content=""):
 
+        if os.path.exists(path):
 
-
-def replace_code(path, old, new):
-
-    try:
-
-        create_backup(path)
+            return "File already exists."
 
 
-        with open(
-            path,
-            "r",
-            encoding="utf-8"
-        ) as file:
-
-            content = file.read()
+        folder = os.path.dirname(path)
 
 
+        if folder:
 
-        if old not in content:
-
-            return "Could not find the code to replace."
-
-
-
-        content = content.replace(
-            old,
-            new
-        )
+            os.makedirs(
+                folder,
+                exist_ok=True
+            )
 
 
         with open(
@@ -98,21 +56,45 @@ def replace_code(path, old, new):
             file.write(content)
 
 
-
-        return "Code updated successfully. Backup created."
-
-
-    except Exception as e:
-
-        return f"Error: {e}"
+        self.last_change = path
 
 
+        return (
+            f"Created file: {path}"
+        )
 
-def append_code(path, code):
 
-    try:
 
-        create_backup(path)
+    def overwrite(self, path, content):
+
+        if not os.path.exists(path):
+
+            return "File not found."
+
+
+        with open(
+            path,
+            "w",
+            encoding="utf-8"
+        ) as file:
+
+            file.write(content)
+
+
+        self.last_change = path
+
+
+        return (
+            f"Updated file: {path}"
+        )
+
+
+
+    def append(self, path, content):
+
+        if not os.path.exists(path):
+
+            return "File not found."
 
 
         with open(
@@ -121,30 +103,18 @@ def append_code(path, code):
             encoding="utf-8"
         ) as file:
 
-            file.write("\n" + code)
+            file.write(content)
+
+
+        self.last_change = path
+
+
+        return (
+            f"Added content to: {path}"
+        )
 
 
 
-        return "Code added successfully. Backup created."
+    def file_exists(self, path):
 
-
-    except Exception as e:
-
-        return f"Error: {e}"
-
-
-
-def file_info(path):
-
-    if not os.path.exists(path):
-
-        return "File does not exist."
-
-
-    size = os.path.getsize(path)
-
-
-    return (
-        f"File: {path}\n"
-        f"Size: {size} bytes"
-    )
+        return os.path.exists(path)
