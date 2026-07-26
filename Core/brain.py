@@ -9,6 +9,12 @@ from core.files import (
     list_files,
     search_files
 )
+from core.code_editor import (
+    read_code,
+    replace_code,
+    append_code,
+    file_info
+)
 from plugins.plugin_manager import PluginManager
 
 
@@ -19,7 +25,6 @@ class AlfredBrain:
 
         self.name = "Alfred"
 
-        # Plugin system
         self.plugin_manager = PluginManager()
         self.plugin_manager.load_plugins()
 
@@ -28,7 +33,6 @@ class AlfredBrain:
     def think(self, message):
 
         message = message.lower().strip()
-
 
 
         # =========================
@@ -61,7 +65,6 @@ class AlfredBrain:
                 f"I am {info['name']} "
                 f"version {info['version']}."
             )
-
 
 
         if "system info" in message:
@@ -97,7 +100,6 @@ class AlfredBrain:
                     1
                 )
 
-
                 return remember(
                     key.strip(),
                     value.strip()
@@ -116,9 +118,7 @@ class AlfredBrain:
                 1
             )
 
-            return recall(
-                key.strip()
-            )
+            return recall(key.strip())
 
 
 
@@ -218,7 +218,7 @@ class AlfredBrain:
 
 
         # =========================
-        # FILE SYSTEM
+        # FILE MANAGER
         # =========================
 
         if message == "list files":
@@ -264,7 +264,35 @@ class AlfredBrain:
 
 
         # =========================
-        # PLUGINS
+        # CODE ASSISTANT
+        # =========================
+
+        if message.startswith("read code "):
+
+            path = message.replace(
+                "read code ",
+                "",
+                1
+            )
+
+            return read_code(path)
+
+
+
+        if message.startswith("file info "):
+
+            path = message.replace(
+                "file info ",
+                "",
+                1
+            )
+
+            return file_info(path)
+
+
+
+        # =========================
+        # PLUGIN COMMANDS
         # =========================
 
         if "list plugins" in message:
@@ -288,13 +316,11 @@ class AlfredBrain:
             )
 
 
-
         if "how are you" in message:
 
             return (
                 "All systems are operating normally."
             )
-
 
 
         if "thank you" in message:
@@ -304,7 +330,7 @@ class AlfredBrain:
 
 
         # =========================
-        # UNKNOWN COMMAND
+        # UNKNOWN
         # =========================
 
         return (
